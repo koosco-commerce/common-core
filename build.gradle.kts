@@ -100,8 +100,8 @@ publishing {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/koosco-commerce/common-core")
             credentials {
-                username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
-                password = project.findProperty("gpr.token") as String? ?: System.getenv("GITHUB_TOKEN")
+                username = project.findProperty("gpr.user") as String? ?: System.getenv("GH_ACTOR")
+                password = project.findProperty("gpr.token") as String? ?: System.getenv("GH_TOKEN")
             }
         }
     }
