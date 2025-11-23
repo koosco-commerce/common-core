@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.koosco"
-version = "0.0.1-SNAPSHOT"
+version = "0.0.1"
 description = "Common core library for MSA services"
 
 java {
@@ -75,7 +75,7 @@ publishing {
 
             pom {
                 name.set("common-core")
-                description.set("Common core library for MSA services")
+                description.set("Common core library")
                 url.set("https://github.com/koosco-commerce/common-core")
 
                 licenses {
@@ -98,7 +98,7 @@ publishing {
     repositories {
         maven {
             name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/koosco/common-core")
+            url = uri("https://maven.pkg.github.com/koosco-commerce/common-core")
             credentials {
                 username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
                 password = project.findProperty("gpr.token") as String? ?: System.getenv("GITHUB_TOKEN")
