@@ -31,6 +31,6 @@ jobs:
 
       - name: Publish package to GitHub Packages
         env:
-          GITHUB_ACTOR: ${{ github.actor }}
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_ACTOR: ${{ github.actor }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: ./gradlew publish --no-daemon
