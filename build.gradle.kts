@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "com.koosco"
-version = "0.0.2"
+version = "0.0.3"
 description = "Common core library"
 
 java {
