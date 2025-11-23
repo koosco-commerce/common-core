@@ -52,7 +52,7 @@ class GlobalExceptionHandlerTest {
         mockMvc.perform(
             post("/test/validate-body")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(invalidJson)
+                .content(invalidJson),
         )
             .andExpect(status().isBadRequest)
             .andExpect(jsonPath("$.success").value(false))
@@ -81,7 +81,7 @@ class GlobalExceptionHandlerTest {
         mockMvc.perform(
             post("/test/validate-body")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("invalid json{")
+                .content("invalid json{"),
         )
             .andExpect(status().isBadRequest)
             .andExpect(jsonPath("$.success").value(false))
@@ -128,7 +128,7 @@ class TestController {
         val email: String?,
 
         @field:Min(value = 0, message = "Age must be positive")
-        val age: Int?
+        val age: Int?,
     )
 
     @GetMapping("/success")
@@ -146,8 +146,8 @@ class TestController {
         throw ValidationException(
             message = "Validation failed",
             fieldErrors = listOf(
-                com.koosco.common.core.error.ApiError.FieldError("field", "value", "Invalid")
-            )
+                com.koosco.common.core.error.ApiError.FieldError("field", "value", "Invalid"),
+            ),
         )
     }
 

@@ -3,7 +3,6 @@ package com.koosco.common.core.util
 import com.fasterxml.jackson.core.type.TypeReference
 import org.junit.jupiter.api.Test
 import java.time.Instant
-import java.time.LocalDateTime
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
@@ -15,7 +14,7 @@ class JsonUtilsTest {
     data class TestData(
         val name: String,
         val value: Int,
-        val timestamp: Instant? = null
+        val timestamp: Instant? = null,
     )
 
     @Test

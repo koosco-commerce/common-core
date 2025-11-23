@@ -28,13 +28,13 @@ class ApiResponseAdvice : ResponseBodyAdvice<Any> {
         private val EXCLUDED_PACKAGES = setOf(
             "org.springframework.boot.actuate",
             "org.springdoc",
-            "springfox"
+            "springfox",
         )
     }
 
     override fun supports(
         returnType: MethodParameter,
-        converterType: Class<out HttpMessageConverter<*>>
+        converterType: Class<out HttpMessageConverter<*>>,
     ): Boolean {
         // Skip if already ApiResponse
         if (returnType.parameterType == ApiResponse::class.java) {
@@ -66,7 +66,7 @@ class ApiResponseAdvice : ResponseBodyAdvice<Any> {
         selectedContentType: MediaType,
         selectedConverterType: Class<out HttpMessageConverter<*>>,
         request: ServerHttpRequest,
-        response: ServerHttpResponse
+        response: ServerHttpResponse,
     ): Any? {
         // Already wrapped, return as-is
         if (body is ApiResponse<*>) {

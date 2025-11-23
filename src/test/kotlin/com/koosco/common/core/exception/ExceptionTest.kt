@@ -14,7 +14,7 @@ class ExceptionTest {
     fun `BaseException should convert to ApiError correctly`() {
         val exception = BaseException(
             errorCode = CommonErrorCode.BAD_REQUEST,
-            message = "Custom message"
+            message = "Custom message",
         )
 
         val apiError = exception.toApiError()
@@ -37,11 +37,11 @@ class ExceptionTest {
     @Test
     fun `ValidationException should include field errors`() {
         val fieldErrors = listOf(
-            ApiError.FieldError("email", "invalid@", "Invalid email format")
+            ApiError.FieldError("email", "invalid@", "Invalid email format"),
         )
         val exception = ValidationException(
             message = "검증 오류가 발생했습니다.",
-            fieldErrors = fieldErrors
+            fieldErrors = fieldErrors,
         )
 
         val apiError = exception.toApiError()
@@ -63,7 +63,7 @@ class ExceptionTest {
     fun `UnauthorizedException should have 401 status`() {
         val exception = UnauthorizedException(
             errorCode = CommonErrorCode.INVALID_TOKEN,
-            message = "토큰이 유효하지 않습니다."
+            message = "토큰이 유효하지 않습니다.",
         )
 
         assertEquals(HttpStatus.UNAUTHORIZED, exception.errorCode.status)
@@ -81,7 +81,7 @@ class ExceptionTest {
     fun `ConflictException should have 409 status`() {
         val exception = ConflictException(
             errorCode = CommonErrorCode.DUPLICATE_RESOURCE,
-            message = "이메일이 이미 사용 중입니다."
+            message = "이메일이 이미 사용 중입니다.",
         )
 
         assertEquals(HttpStatus.CONFLICT, exception.errorCode.status)
@@ -93,7 +93,7 @@ class ExceptionTest {
         val cause = RuntimeException("Database error")
         val exception = InternalServerException(
             message = "서버 오류가 발생했습니다.",
-            cause = cause
+            cause = cause,
         )
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.errorCode.status)

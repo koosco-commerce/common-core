@@ -12,7 +12,7 @@ open class BaseException(
     val errorCode: ErrorCode,
     override val message: String = errorCode.message,
     override val cause: Throwable? = null,
-    val fieldErrors: List<ApiError.FieldError>? = null
+    val fieldErrors: List<ApiError.FieldError>? = null,
 ) : RuntimeException(message, cause) {
 
     /**
@@ -21,7 +21,7 @@ open class BaseException(
     fun toApiError(): ApiError = ApiError.of(
         errorCode = errorCode,
         details = if (message != errorCode.message) message else null,
-        fieldErrors = fieldErrors
+        fieldErrors = fieldErrors,
     )
 }
 
@@ -32,7 +32,7 @@ open class BadRequestException(
     errorCode: ErrorCode = CommonErrorCode.BAD_REQUEST,
     message: String = errorCode.message,
     cause: Throwable? = null,
-    fieldErrors: List<ApiError.FieldError>? = null
+    fieldErrors: List<ApiError.FieldError>? = null,
 ) : BaseException(errorCode, message, cause, fieldErrors)
 
 /**
@@ -41,7 +41,7 @@ open class BadRequestException(
 class ValidationException(
     message: String = CommonErrorCode.VALIDATION_ERROR.message,
     fieldErrors: List<ApiError.FieldError>? = null,
-    cause: Throwable? = null
+    cause: Throwable? = null,
 ) : BadRequestException(CommonErrorCode.VALIDATION_ERROR, message, cause, fieldErrors)
 
 /**
@@ -50,7 +50,7 @@ class ValidationException(
 open class UnauthorizedException(
     errorCode: ErrorCode = CommonErrorCode.UNAUTHORIZED,
     message: String = errorCode.message,
-    cause: Throwable? = null
+    cause: Throwable? = null,
 ) : BaseException(errorCode, message, cause)
 
 /**
@@ -59,7 +59,7 @@ open class UnauthorizedException(
 open class ForbiddenException(
     errorCode: ErrorCode = CommonErrorCode.FORBIDDEN,
     message: String = errorCode.message,
-    cause: Throwable? = null
+    cause: Throwable? = null,
 ) : BaseException(errorCode, message, cause)
 
 /**
@@ -68,7 +68,7 @@ open class ForbiddenException(
 open class NotFoundException(
     errorCode: ErrorCode = CommonErrorCode.NOT_FOUND,
     message: String = errorCode.message,
-    cause: Throwable? = null
+    cause: Throwable? = null,
 ) : BaseException(errorCode, message, cause)
 
 /**
@@ -77,7 +77,7 @@ open class NotFoundException(
 open class ConflictException(
     errorCode: ErrorCode = CommonErrorCode.CONFLICT,
     message: String = errorCode.message,
-    cause: Throwable? = null
+    cause: Throwable? = null,
 ) : BaseException(errorCode, message, cause)
 
 /**
@@ -86,7 +86,7 @@ open class ConflictException(
 open class InternalServerException(
     errorCode: ErrorCode = CommonErrorCode.INTERNAL_SERVER_ERROR,
     message: String = errorCode.message,
-    cause: Throwable? = null
+    cause: Throwable? = null,
 ) : BaseException(errorCode, message, cause)
 
 /**
@@ -95,7 +95,7 @@ open class InternalServerException(
 open class ExternalServiceException(
     errorCode: ErrorCode = CommonErrorCode.EXTERNAL_SERVICE_ERROR,
     message: String = errorCode.message,
-    cause: Throwable? = null
+    cause: Throwable? = null,
 ) : BaseException(errorCode, message, cause)
 
 /**
@@ -104,5 +104,5 @@ open class ExternalServiceException(
 open class ServiceUnavailableException(
     errorCode: ErrorCode = CommonErrorCode.SERVICE_UNAVAILABLE,
     message: String = errorCode.message,
-    cause: Throwable? = null
+    cause: Throwable? = null,
 ) : BaseException(errorCode, message, cause)

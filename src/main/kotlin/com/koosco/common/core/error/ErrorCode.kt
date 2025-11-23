@@ -18,7 +18,7 @@ interface ErrorCode {
 enum class CommonErrorCode(
     override val code: String,
     override val message: String,
-    override val status: HttpStatus
+    override val status: HttpStatus,
 ) : ErrorCode {
 
     // 400 Bad Request
