@@ -3,12 +3,13 @@ plugins {
     kotlin("plugin.spring") version "1.9.25"
     id("org.springframework.boot") version "3.5.8"
     id("io.spring.dependency-management") version "1.1.7"
+    id("com.diffplug.spotless") version "6.25.0"
     `maven-publish`
 }
 
 group = "com.koosco"
-version = "0.0.1"
-description = "Common core library for MSA services"
+version = "0.0.2"
+description = "Common core library"
 
 java {
     toolchain {
@@ -49,6 +50,27 @@ dependencies {
 kotlin {
     compilerOptions {
         freeCompilerArgs.addAll("-Xjsr305=strict")
+    }
+}
+
+spotless {
+    kotlin {
+        ktlint().editorConfigOverride(
+            mapOf(
+                "ktlint_standard_no-wildcard-imports" to "disabled",
+                "ij_kotlin_name_count_to_use_star_import" to "5",
+                "ij_kotlin_name_count_to_use_star_import_for_members" to "3",
+            ),
+        )
+    }
+    kotlinGradle {
+        ktlint().editorConfigOverride(
+            mapOf(
+                "ktlint_standard_no-wildcard-imports" to "disabled",
+                "ij_kotlin_name_count_to_use_star_import" to "5",
+                "ij_kotlin_name_count_to_use_star_import_for_members" to "3",
+            ),
+        )
     }
 }
 
@@ -100,8 +122,8 @@ publishing {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/koosco-commerce/common-core")
             credentials {
-                username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
-                password = project.findProperty("gpr.token") as String? ?: System.getenv("GITHUB_TOKEN")
+                username = project.findProperty("gpr.user") as String? ?: System.getenv("GH_ACTOR")
+                password = project.findProperty("gpr.token") as String? ?: System.getenv("GH_TOKEN")
             }
         }
     }

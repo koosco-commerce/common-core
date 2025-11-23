@@ -29,7 +29,7 @@ class CommonCoreAutoConfiguration {
         prefix = "common.core.exception-handler",
         name = ["enabled"],
         havingValue = "true",
-        matchIfMissing = true
+        matchIfMissing = true,
     )
     fun globalExceptionHandler(): GlobalExceptionHandler = GlobalExceptionHandler()
 
@@ -43,7 +43,7 @@ class CommonCoreAutoConfiguration {
         prefix = "common.core.response-advice",
         name = ["enabled"],
         havingValue = "true",
-        matchIfMissing = false
+        matchIfMissing = false,
     )
     fun apiResponseAdvice(): ApiResponseAdvice = ApiResponseAdvice()
 

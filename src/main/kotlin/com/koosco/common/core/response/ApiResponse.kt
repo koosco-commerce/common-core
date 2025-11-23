@@ -15,7 +15,7 @@ data class ApiResponse<T>(
     val success: Boolean,
     val data: T? = null,
     val error: ApiError? = null,
-    val timestamp: Instant = Instant.now()
+    val timestamp: Instant = Instant.now(),
 ) {
     companion object {
         /**
@@ -23,14 +23,14 @@ data class ApiResponse<T>(
          */
         fun <T> success(data: T): ApiResponse<T> = ApiResponse(
             success = true,
-            data = data
+            data = data,
         )
 
         /**
          * Create a successful response without data.
          */
         fun <T> success(): ApiResponse<T> = ApiResponse(
-            success = true
+            success = true,
         )
 
         /**
@@ -38,7 +38,7 @@ data class ApiResponse<T>(
          */
         fun <T> error(error: ApiError): ApiResponse<T> = ApiResponse(
             success = false,
-            error = error
+            error = error,
         )
 
         /**
@@ -46,7 +46,7 @@ data class ApiResponse<T>(
          */
         fun <T> error(errorCode: ErrorCode, message: String? = null): ApiResponse<T> = ApiResponse(
             success = false,
-            error = ApiError.of(errorCode, message)
+            error = ApiError.of(errorCode, message),
         )
 
         /**
@@ -55,10 +55,10 @@ data class ApiResponse<T>(
         fun <T> error(
             errorCode: ErrorCode,
             message: String? = null,
-            fieldErrors: List<ApiError.FieldError>? = null
+            fieldErrors: List<ApiError.FieldError>? = null,
         ): ApiResponse<T> = ApiResponse(
             success = false,
-            error = ApiError.of(errorCode, message, fieldErrors)
+            error = ApiError.of(errorCode, message, fieldErrors),
         )
     }
 }

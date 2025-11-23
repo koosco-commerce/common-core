@@ -10,7 +10,7 @@ data class ApiError(
     val code: String,
     val message: String,
     val details: String? = null,
-    val fieldErrors: List<FieldError>? = null
+    val fieldErrors: List<FieldError>? = null,
 ) {
     /**
      * Field-level validation error.
@@ -18,7 +18,7 @@ data class ApiError(
     data class FieldError(
         val field: String,
         val value: Any?,
-        val reason: String
+        val reason: String,
     )
 
     companion object {
@@ -28,7 +28,7 @@ data class ApiError(
         fun of(errorCode: ErrorCode, details: String? = null): ApiError = ApiError(
             code = errorCode.code,
             message = errorCode.message,
-            details = details
+            details = details,
         )
 
         /**
@@ -37,12 +37,12 @@ data class ApiError(
         fun of(
             errorCode: ErrorCode,
             details: String? = null,
-            fieldErrors: List<FieldError>?
+            fieldErrors: List<FieldError>?,
         ): ApiError = ApiError(
             code = errorCode.code,
             message = errorCode.message,
             details = details,
-            fieldErrors = fieldErrors?.takeIf { it.isNotEmpty() }
+            fieldErrors = fieldErrors?.takeIf { it.isNotEmpty() },
         )
     }
 }

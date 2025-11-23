@@ -37,14 +37,14 @@ class GlobalExceptionHandler {
      */
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleMethodArgumentNotValidException(
-        e: MethodArgumentNotValidException
+        e: MethodArgumentNotValidException,
     ): ResponseEntity<ApiResponse<Nothing>> {
         log.warn("Validation error: {}", e.message)
         val fieldErrors = e.bindingResult.fieldErrors.map { error ->
             ApiError.FieldError(
                 field = error.field,
                 value = error.rejectedValue,
-                reason = error.defaultMessage ?: "Invalid value"
+                reason = error.defaultMessage ?: "Invalid value",
             )
         }
         return ResponseEntity
@@ -62,7 +62,7 @@ class GlobalExceptionHandler {
             ApiError.FieldError(
                 field = error.field,
                 value = error.rejectedValue,
-                reason = error.defaultMessage ?: "Invalid value"
+                reason = error.defaultMessage ?: "Invalid value",
             )
         }
         return ResponseEntity
@@ -75,7 +75,7 @@ class GlobalExceptionHandler {
      */
     @ExceptionHandler(ConstraintViolationException::class)
     fun handleConstraintViolationException(
-        e: ConstraintViolationException
+        e: ConstraintViolationException,
     ): ResponseEntity<ApiResponse<Nothing>> {
         log.warn("Constraint violation: {}", e.message)
         val fieldErrors = e.constraintViolations.map { violation ->
@@ -84,7 +84,7 @@ class GlobalExceptionHandler {
             ApiError.FieldError(
                 field = field,
                 value = violation.invalidValue,
-                reason = violation.message
+                reason = violation.message,
             )
         }
         return ResponseEntity
@@ -97,7 +97,7 @@ class GlobalExceptionHandler {
      */
     @ExceptionHandler(MissingServletRequestParameterException::class)
     fun handleMissingServletRequestParameterException(
-        e: MissingServletRequestParameterException
+        e: MissingServletRequestParameterException,
     ): ResponseEntity<ApiResponse<Nothing>> {
         log.warn("Missing parameter: {}", e.parameterName)
         return ResponseEntity
@@ -105,8 +105,8 @@ class GlobalExceptionHandler {
             .body(
                 ApiResponse.error(
                     CommonErrorCode.MISSING_PARAMETER,
-                    "Missing parameter: ${e.parameterName}"
-                )
+                    "Missing parameter: ${e.parameterName}",
+                ),
             )
     }
 
@@ -115,7 +115,7 @@ class GlobalExceptionHandler {
      */
     @ExceptionHandler(MethodArgumentTypeMismatchException::class)
     fun handleMethodArgumentTypeMismatchException(
-        e: MethodArgumentTypeMismatchException
+        e: MethodArgumentTypeMismatchException,
     ): ResponseEntity<ApiResponse<Nothing>> {
         log.warn("Type mismatch: {} = {}", e.name, e.value)
         return ResponseEntity
@@ -123,8 +123,8 @@ class GlobalExceptionHandler {
             .body(
                 ApiResponse.error(
                     CommonErrorCode.INVALID_TYPE,
-                    "Invalid type for parameter: ${e.name}"
-                )
+                    "Invalid type for parameter: ${e.name}",
+                ),
             )
     }
 
@@ -133,7 +133,7 @@ class GlobalExceptionHandler {
      */
     @ExceptionHandler(HttpMessageNotReadableException::class)
     fun handleHttpMessageNotReadableException(
-        e: HttpMessageNotReadableException
+        e: HttpMessageNotReadableException,
     ): ResponseEntity<ApiResponse<Nothing>> {
         log.warn("Message not readable: {}", e.message)
         return ResponseEntity
@@ -146,7 +146,7 @@ class GlobalExceptionHandler {
      */
     @ExceptionHandler(HttpRequestMethodNotSupportedException::class)
     fun handleHttpRequestMethodNotSupportedException(
-        e: HttpRequestMethodNotSupportedException
+        e: HttpRequestMethodNotSupportedException,
     ): ResponseEntity<ApiResponse<Nothing>> {
         log.warn("Method not supported: {}", e.method)
         return ResponseEntity
@@ -154,8 +154,8 @@ class GlobalExceptionHandler {
             .body(
                 ApiResponse.error(
                     CommonErrorCode.METHOD_NOT_ALLOWED,
-                    "Method ${e.method} not allowed"
-                )
+                    "Method ${e.method} not allowed",
+                ),
             )
     }
 
@@ -164,7 +164,7 @@ class GlobalExceptionHandler {
      */
     @ExceptionHandler(HttpMediaTypeNotSupportedException::class)
     fun handleHttpMediaTypeNotSupportedException(
-        e: HttpMediaTypeNotSupportedException
+        e: HttpMediaTypeNotSupportedException,
     ): ResponseEntity<ApiResponse<Nothing>> {
         log.warn("Media type not supported: {}", e.contentType)
         return ResponseEntity
