@@ -2,6 +2,8 @@ package com.koosco.common.core.event
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
+import jakarta.validation.Valid
+import jakarta.validation.constraints.NotBlank
 import java.time.Instant
 import java.util.UUID
 
@@ -17,6 +19,7 @@ data class CloudEvent<T>(
      * Identifies the event. REQUIRED.
      * Producers MUST ensure that source + id is unique for each distinct event.
      */
+    @field:NotBlank
     @JsonProperty("id")
     val id: String,
 
@@ -28,6 +31,7 @@ data class CloudEvent<T>(
      * Format: URI-reference (RFC 3986)
      * Example: "urn:koosco:order-service", "https://api.koosco.com/orders"
      */
+    @field:NotBlank
     @JsonProperty("source")
     val source: String,
 
@@ -35,6 +39,7 @@ data class CloudEvent<T>(
      * The version of the CloudEvents specification. REQUIRED.
      * This enables the interpretation of the context.
      */
+    @field:NotBlank
     @JsonProperty("specversion")
     val specVersion: String = "1.0",
 
@@ -45,6 +50,7 @@ data class CloudEvent<T>(
      * Format: Reverse domain name notation recommended
      * Example: "com.koosco.order.created", "com.koosco.payment.completed"
      */
+    @field:NotBlank
     @JsonProperty("type")
     val type: String,
 
@@ -92,6 +98,7 @@ data class CloudEvent<T>(
      * The event payload. OPTIONAL.
      * The event payload can be of any type.
      */
+    @field:Valid
     @JsonProperty("data")
     val data: T? = null,
 ) {
