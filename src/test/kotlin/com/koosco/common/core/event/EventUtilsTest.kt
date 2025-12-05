@@ -1,6 +1,7 @@
 package com.koosco.common.core.event
 
-import org.junit.jupiter.api.Assertions.*
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 
 class EventUtilsTest {
@@ -24,11 +25,11 @@ class EventUtilsTest {
         val json = EventUtils.toJson(event)
 
         // then
-        assertNotNull(json)
-        assertTrue(json.contains("\"id\""))
-        assertTrue(json.contains("\"source\""))
-        assertTrue(json.contains("\"type\""))
-        assertTrue(json.contains("order-123"))
+        assertThat(json).isNotNull()
+        assertThat(json).contains("\"id\"")
+        assertThat(json).contains("\"source\"")
+        assertThat(json).contains("\"type\"")
+        assertThat(json).contains("order-123")
     }
 
     @Test
@@ -45,9 +46,9 @@ class EventUtilsTest {
         val deserializedEvent = EventUtils.fromJson<OrderData>(json)
 
         // then
-        assertEquals(originalEvent.id, deserializedEvent.id)
-        assertEquals(originalEvent.source, deserializedEvent.source)
-        assertEquals(originalEvent.type, deserializedEvent.type)
+        assertThat(deserializedEvent.id).isEqualTo(originalEvent.id)
+        assertThat(deserializedEvent.source).isEqualTo(originalEvent.source)
+        assertThat(deserializedEvent.type).isEqualTo(originalEvent.type)
     }
 
     @Test
@@ -63,10 +64,10 @@ class EventUtilsTest {
         val map = EventUtils.toMap(event)
 
         // then
-        assertEquals(event.id, map["id"])
-        assertEquals(event.source, map["source"])
-        assertEquals(event.type, map["type"])
-        assertNotNull(map["data"])
+        assertThat(map["id"]).isEqualTo(event.id)
+        assertThat(map["source"]).isEqualTo(event.source)
+        assertThat(map["type"]).isEqualTo(event.type)
+        assertThat(map["data"]).isNotNull()
     }
 
     @Test
@@ -80,12 +81,12 @@ class EventUtilsTest {
         val map = EventUtils.toMap(event)
 
         // when
-        val convertedEvent = EventUtils.fromMap(map, OrderData::class.java)
+        val convertedEvent = EventUtils.fromMap<OrderData>(map)
 
         // then
-        assertEquals(event.id, convertedEvent.id)
-        assertEquals(event.source, convertedEvent.source)
-        assertEquals(event.type, convertedEvent.type)
+        assertThat(convertedEvent.id).isEqualTo(event.id)
+        assertThat(convertedEvent.source).isEqualTo(event.source)
+        assertThat(convertedEvent.type).isEqualTo(event.type)
     }
 
     @Test
@@ -102,9 +103,9 @@ class EventUtilsTest {
         val extractedData = EventUtils.extractData(event, OrderData::class.java)
 
         // then
-        assertNotNull(extractedData)
-        assertEquals(orderData.orderId, extractedData?.orderId)
-        assertEquals(orderData.amount, extractedData?.amount)
+        assertThat(extractedData).isNotNull()
+        assertThat(extractedData?.orderId).isEqualTo(orderData.orderId)
+        assertThat(extractedData?.amount).isEqualTo(orderData.amount)
     }
 
     @Test
@@ -123,11 +124,11 @@ class EventUtilsTest {
         val targetEvent = EventUtils.convertData(sourceEvent, TargetData::class.java)
 
         // then
-        assertEquals(sourceEvent.id, targetEvent.id)
-        assertEquals(sourceEvent.source, targetEvent.source)
-        assertEquals(sourceEvent.type, targetEvent.type)
-        assertNotNull(targetEvent.data)
-        assertEquals("test", targetEvent.data?.value)
+        assertThat(targetEvent.id).isEqualTo(sourceEvent.id)
+        assertThat(targetEvent.source).isEqualTo(sourceEvent.source)
+        assertThat(targetEvent.type).isEqualTo(sourceEvent.type)
+        assertThat(targetEvent.data).isNotNull()
+        assertThat(targetEvent.data?.value).isEqualTo("test")
     }
 
     @Test
@@ -140,11 +141,12 @@ class EventUtilsTest {
         )
 
         // when
-        val json = EventUtils.validateAndSerialize(event)
+        EventValidator.validate(event).throwIfInvalid()
+        val json = EventUtils.toJson(event)
 
         // then
-        assertNotNull(json)
-        assertTrue(json.contains("order-123"))
+        assertThat(json).isNotNull()
+        assertThat(json).contains("order-123")
     }
 
     @Test
@@ -157,9 +159,9 @@ class EventUtilsTest {
         )
 
         // when & then
-        assertThrows(ValidationException::class.java) {
-            EventUtils.validateAndSerialize(event)
-        }
+        assertThatThrownBy {
+            EventValidator.validate(event).throwIfInvalid()
+        }.isInstanceOf(ValidationException::class.java)
     }
 
     @Test
@@ -173,12 +175,12 @@ class EventUtilsTest {
         val json = EventUtils.toJson(originalEvent)
 
         // when
-        val event = EventUtils.deserializeAndValidate(json, OrderData::class.java)
+        val event = EventUtils.deserializeAndValidate<OrderData>(json)
 
         // then
-        assertEquals(originalEvent.id, event.id)
-        assertEquals(originalEvent.source, event.source)
-        assertEquals(originalEvent.type, event.type)
+        assertThat(event.id).isEqualTo(originalEvent.id)
+        assertThat(event.source).isEqualTo(originalEvent.source)
+        assertThat(event.type).isEqualTo(originalEvent.type)
     }
 
     @Test
@@ -195,8 +197,8 @@ class EventUtilsTest {
         val deserializedEvent = EventUtils.fromJson<OrderData?>(json)
 
         // then
-        assertEquals(event.id, deserializedEvent.id)
-        assertNull(deserializedEvent.data)
+        assertThat(deserializedEvent.id).isEqualTo(event.id)
+        assertThat(deserializedEvent.data).isNull()
     }
 
     @Test
@@ -213,6 +215,6 @@ class EventUtilsTest {
         val deserializedEvent = EventUtils.fromJson<OrderData>(json)
 
         // then
-        assertNotNull(deserializedEvent.time)
+        assertThat(deserializedEvent.time).isNotNull()
     }
 }
