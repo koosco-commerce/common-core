@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "com.koosco"
-version = "0.1.0"
+version = "0.2.0"
 description = "Common core library"
 
 java {
@@ -35,6 +35,8 @@ dependencies {
     implementation("org.springframework:spring-web")
     implementation("com.fasterxml.jackson.core:jackson-databind")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+    api("org.springframework:spring-context")
+    api("org.springframework:spring-tx")
 
     // spring web mvc
     compileOnly("org.springframework:spring-webmvc")
