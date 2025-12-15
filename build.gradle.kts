@@ -35,6 +35,8 @@ dependencies {
     implementation("org.springframework:spring-web")
     implementation("com.fasterxml.jackson.core:jackson-databind")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+    api("org.springframework:spring-context")
+    api("org.springframework:spring-tx")
 
     // spring web mvc
     compileOnly("org.springframework:spring-webmvc")
