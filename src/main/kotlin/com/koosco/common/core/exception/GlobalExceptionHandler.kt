@@ -5,6 +5,7 @@ import com.koosco.common.core.error.CommonErrorCode
 import com.koosco.common.core.response.ApiResponse
 import jakarta.validation.ConstraintViolationException
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.validation.BindException
@@ -22,7 +23,16 @@ class GlobalExceptionHandler {
     private val log = LoggerFactory.getLogger(javaClass)
 
     /**
-     * BaseException 처리
+     * =========================
+     * 1. Application-level Exception
+     * =========================
+     *
+     * BaseException 계열은 비즈니스/도메인 레벨에서
+     * "의미 있는 실패"를 표현하기 위한 예외이다.
+     *
+     * - ErrorCode를 반드시 포함한다.
+     * - HTTP 상태 코드와 1:1로 매핑된다.
+     * - 클라이언트에게 그대로 응답으로 내려간다.
      */
     @ExceptionHandler(BaseException::class)
     fun handleBaseException(e: BaseException): ResponseEntity<ApiResponse<Nothing>> {
@@ -33,7 +43,19 @@ class GlobalExceptionHandler {
     }
 
     /**
-     * Bean validation 오류 처리 @Valid 어노테이션
+     * =========================
+     * 2. Validation Exceptions
+     * =========================
+     *
+     * 요청 파라미터/바디 검증 실패.
+     * - 컨트롤러 진입 시점에서 발생
+     * - 트랜잭션이 시작되기 전에 실패
+     * - 모든 검증 오류는 VALIDATION_ERROR로 통합 응답
+     */
+
+    /**
+     * @Valid 사용 시 RequestBody 검증 실패
+     * (POST, PUT, PATCH Body)
      */
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleMethodArgumentNotValidException(
@@ -53,7 +75,8 @@ class GlobalExceptionHandler {
     }
 
     /**
-     * BindException 처리 (주로 GET 요청의 쿼리 파라미터 바인딩 오류)
+     * @ModelAttribute / Query Parameter 바인딩 실패
+     * (주로 GET 요청)
      */
     @ExceptionHandler(BindException::class)
     fun handleBindException(e: BindException): ResponseEntity<ApiResponse<Nothing>> {
@@ -71,7 +94,7 @@ class GlobalExceptionHandler {
     }
 
     /**
-     * ConstraintViolationException 처리 (주로 @Validated 어노테이션)
+     * @Validated 사용 시 PathVariable / RequestParam 검증 실패
      */
     @ExceptionHandler(ConstraintViolationException::class)
     fun handleConstraintViolationException(
@@ -93,7 +116,16 @@ class GlobalExceptionHandler {
     }
 
     /**
-     * 누락된 요청 파라미터 처리
+     * =========================
+     * 3. Request Mapping Errors
+     * =========================
+     *
+     * 요청 자체가 잘못된 경우
+     * (형식, 타입, 메서드, 미디어 타입 등)
+     */
+
+    /**
+     * 필수 RequestParam 누락
      */
     @ExceptionHandler(MissingServletRequestParameterException::class)
     fun handleMissingServletRequestParameterException(
@@ -111,7 +143,7 @@ class GlobalExceptionHandler {
     }
 
     /**
-     * 타입 불일치 처리
+     * PathVariable / RequestParam 타입 불일치
      */
     @ExceptionHandler(MethodArgumentTypeMismatchException::class)
     fun handleMethodArgumentTypeMismatchException(
@@ -129,7 +161,8 @@ class GlobalExceptionHandler {
     }
 
     /**
-     * 읽을 수 없는 메시지 처리 (예: 잘못된 JSON 포맷)
+     * 잘못된 JSON 형식
+     * (파싱 불가)
      */
     @ExceptionHandler(HttpMessageNotReadableException::class)
     fun handleHttpMessageNotReadableException(
@@ -142,7 +175,7 @@ class GlobalExceptionHandler {
     }
 
     /**
-     * 지원되지 않는 HTTP 메서드 처리
+     * 지원하지 않는 HTTP Method
      */
     @ExceptionHandler(HttpRequestMethodNotSupportedException::class)
     fun handleHttpRequestMethodNotSupportedException(
@@ -160,7 +193,7 @@ class GlobalExceptionHandler {
     }
 
     /**
-     * 지원되지 않는 미디어 타입 처리
+     * 지원하지 않는 Content-Type
      */
     @ExceptionHandler(HttpMediaTypeNotSupportedException::class)
     fun handleHttpMediaTypeNotSupportedException(
@@ -173,7 +206,34 @@ class GlobalExceptionHandler {
     }
 
     /**
-     * 예상치 못한 예외 처리
+     * =========================
+     * 4. System-level Exceptions
+     * =========================
+     *
+     * 시스템 불변식(invariant) 위반 또는
+     * 예측 불가능한 오류.
+     *
+     * - 클라이언트 책임 ❌
+     * - 비즈니스 오류 ❌
+     * - 반드시 로깅 및 알림 대상
+     */
+
+    /**
+     * 절대 발생하면 안 되는 상태
+     * (버그 또는 트랜잭션/동시성 문제)
+     */
+    @ExceptionHandler(InvariantViolationException::class)
+    fun handleInvariant(ex: InvariantViolationException): ResponseEntity<ApiResponse<Any>> {
+        log.error("Invariant violation detected", ex)
+
+        return ResponseEntity
+            .status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(ApiResponse.error(CommonErrorCode.INTERNAL_SERVER_ERROR))
+    }
+
+    /**
+     * 최종 fallback.
+     * 위에서 처리되지 않은 모든 예외.
      */
     @ExceptionHandler(Exception::class)
     fun handleException(e: Exception): ResponseEntity<ApiResponse<Nothing>> {
