@@ -4,17 +4,19 @@ package com.koosco.common.core.event
  * Interface for handling domain events.
  * Implementations should be registered as Spring beans and will be auto-discovered.
  *
+ * The handler implementation should determine internally whether it can process
+ * the given event type. If the event cannot be handled, the implementation should
+ * either silently ignore it or throw an appropriate exception.
+ *
  * Example:
  * ```
  * @Component
  * class OrderCreatedEventHandler : EventHandler<OrderCreatedEvent> {
  *     override fun handle(event: OrderCreatedEvent) {
- *         // Handle order created event
+ *         // Type checking is done by the framework/dispatcher
+ *         // Just implement the business logic
  *         log.info("Order created: ${event.orderId}")
- *     }
- *
- *     override fun canHandle(eventType: String): Boolean {
- *         return eventType == "com.koosco.order.created"
+ *         orderService.processOrder(event)
  *     }
  * }
  * ```
@@ -22,19 +24,12 @@ package com.koosco.common.core.event
 interface EventHandler<T : DomainEvent> {
     /**
      * Handle the domain event.
+     * The implementation should check internally if it can process the event type.
      *
      * @param event The domain event to handle
      * @throws EventHandlingException if handling fails
      */
     fun handle(event: T)
-
-    /**
-     * Check if this handler can handle the given event type.
-     *
-     * @param eventType The event type to check
-     * @return true if this handler can handle the event type
-     */
-    fun canHandle(eventType: String): Boolean
 
     /**
      * Get the order of this handler.
@@ -56,14 +51,6 @@ interface CloudEventHandler<T> {
      * @throws EventHandlingException if handling fails
      */
     fun handle(event: CloudEvent<T>)
-
-    /**
-     * Check if this handler can handle the given event type.
-     *
-     * @param eventType The CloudEvent type to check
-     * @return true if this handler can handle the event type
-     */
-    fun canHandle(eventType: String): Boolean
 
     /**
      * Get the order of this handler.
