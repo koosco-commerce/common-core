@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "com.koosco"
-version = "0.2.1"
+version = "0.2.2"
 description = "Common core library"
 
 java {
@@ -41,6 +41,9 @@ dependencies {
     // spring web mvc
     compileOnly("org.springframework:spring-webmvc")
     compileOnly("jakarta.servlet:jakarta.servlet-api")
+
+    // openapi/swagger (optional - services can choose to use)
+    compileOnly("org.springdoc:springdoc-openapi-starter-common:2.8.1")
 
     // test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
