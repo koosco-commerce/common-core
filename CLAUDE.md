@@ -4,9 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Module Overview
 
-`common-core` is a shared library providing foundational functionality for all microservices in the commerce platform. It includes error handling, API response standardization, domain event infrastructure, and common utilities.
+`common-core` is a shared library providing foundational functionality for all microservices in the commerce platform. It includes error handling, API response standardization, domain event infrastructure, OpenAPI configuration, and common utilities.
 
-**Version**: 0.2.1
+**Version**: 0.2.2
 **Java**: 21
 **Spring Boot**: 3.5.8
 
@@ -19,6 +19,7 @@ com.koosco.common.core/
 ├── error/          # Error codes and API error structure
 ├── event/          # Domain event and CloudEvent infrastructure
 ├── exception/      # Exception hierarchy and global handler
+├── openapi/        # OpenAPI/Swagger auto-configuration
 ├── response/       # API response wrapper
 ├── transaction/    # Transaction management utilities
 └── util/           # JSON utilities
@@ -39,7 +40,7 @@ enum class OrderErrorCode(
 }
 ```
 
-**CommonErrorCode**: Pre-defined error codes for common HTTP errors (400, 401, 403, 404, 409, 500, 502, 503).
+**CommonErrorCode**: Pre-defined error codes for common HTTP errors (400, 401, 403, 404, 405, 409, 500, 502, 503).
 
 **Exception Hierarchy**:
 - `BaseException` - Base class with `ErrorCode` and `toApiError()` conversion
@@ -109,6 +110,28 @@ interface EventPublisher {
 }
 ```
 
+**AbstractEventPublisher**: Base class for event publishers with automatic validation.
+- Validates all CloudEvents and DomainEvents before publishing
+- Provides customizable topic and key resolution strategies
+- Supports both single and batch event publishing
+
+```kotlin
+@Component
+class KafkaEventPublisher(
+    objectMapper: ObjectMapper,
+    private val kafkaTemplate: KafkaTemplate<String, String>
+) : AbstractEventPublisher(objectMapper) {
+
+    override fun publishRaw(topic: String, key: String?, payload: String) {
+        kafkaTemplate.send(topic, key, payload).get()
+    }
+
+    override fun resolveTopic(event: CloudEvent<*>): String {
+        return "my-app-${event.type.replace(".", "-")}"
+    }
+}
+```
+
 **EventHandler Interface**: For consuming domain events.
 ```kotlin
 interface EventHandler<T : DomainEvent> {
@@ -118,6 +141,30 @@ interface EventHandler<T : DomainEvent> {
 ```
 
 **EventValidator**: Validates CloudEvents and DomainEvents against spec compliance.
+
+For detailed event system usage, see [CloudEvents Usage Guide](src/main/kotlin/com/koosco/common/core/event/README.md).
+
+### OpenAPI/Swagger (`openapi/`)
+
+**OpenApiAutoConfiguration**: Auto-configured OpenAPI documentation with JWT support.
+- Activated when springdoc-openapi is on the classpath
+- JWT Bearer authentication scheme enabled by default
+- Customizable via properties
+
+```yaml
+common:
+  openapi:
+    enabled: true
+    title: "My Service API"
+    version: "v1.0.0"
+    description: "API documentation for my service"
+    jwt-auth-enabled: true
+    contact-name: "Team Name"
+    contact-email: "team@example.com"
+    servers:
+      - url: http://localhost:8080
+        description: Local development
+```
 
 ### Annotations (`annotation/`)
 
@@ -154,6 +201,9 @@ transactionRunner.runNew { /* new transaction (REQUIRES_NEW) */ }
 - `ObjectMapper` (if not already defined)
 - `TransactionRunner`
 
+`OpenApiAutoConfiguration` automatically registers:
+- `OpenAPI` bean with JWT Bearer authentication (when springdoc-openapi is on classpath)
+
 ### Configuration Properties
 
 ```yaml
@@ -163,6 +213,12 @@ common:
       enabled: true   # Default: true
     response-advice:
       enabled: false  # Default: false (enable for auto-wrapping)
+  openapi:
+    enabled: true       # Default: true
+    title: "API Documentation"
+    version: "v1.0.0"
+    description: ""
+    jwt-auth-enabled: true  # Default: true
 ```
 
 ## Consuming This Module
@@ -175,14 +231,14 @@ repositories {
     maven {
         url = uri("https://maven.pkg.github.com/koosco-commerce/common-core")
         credentials {
-            username = project.findProperty("gpr.user") as String? ?: System.getenv("GH_ACTOR")
+            username = project.findProperty("gpr.user") as String? ?: System.getenv("GH_USER")
             password = project.findProperty("gpr.token") as String? ?: System.getenv("GH_TOKEN")
         }
     }
 }
 
 dependencies {
-    implementation("com.koosco:common-core:0.2.1")
+    implementation("com.koosco:common-core:0.2.2")
 }
 ```
 
@@ -194,7 +250,7 @@ gpr.user=your-github-username
 gpr.token=your-github-token
 ```
 
-Or environment variables: `GH_ACTOR`, `GH_TOKEN`
+Or environment variables: `GH_USER`, `GH_TOKEN`
 
 ## Development Commands
 
@@ -219,3 +275,11 @@ Or environment variables: `GH_ACTOR`, `GH_TOKEN`
 3. Run `./gradlew test`
 4. Commit and push
 5. GitHub Actions will publish automatically on push to main
+
+## Version History
+
+| Version | Changes |
+|---------|---------|
+| 0.2.2 | OpenAPI auto-configuration, AbstractEventPublisher |
+| 0.2.1 | Publishing issue fix |
+| 0.2.0 | Event publisher infrastructure |
