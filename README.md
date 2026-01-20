@@ -9,48 +9,12 @@ Commerce 플랫폼의 모든 마이크로서비스를 위한 공통 핵심 라�
 
 ## 개요
 
-`common-core`는 MSA 환경에서 일관된 개발 경험을 제공하기 위한 공통 기능을 포함합니다:
+`common-core`는 각 레포지토리에서  일관된 개발 경험을 제공하기 위한 공통 기능을 포함합니다:
 
 - **에러 처리**: 표준화된 에러 코드 및 예외 처리
 - **API 응답**: 일관된 응답 포맷 및 자동 래핑
 - **이벤트 시스템**: CloudEvents 스펙 기반 도메인 이벤트 인프라
 - **유틸리티**: JSON 직렬화, 트랜잭션 관리, 커스텀 어노테이션
-
-## 설치
-
-### Gradle (Kotlin DSL)
-
-```kotlin
-repositories {
-    mavenCentral()
-    maven {
-        url = uri("https://maven.pkg.github.com/koosco-commerce/common-core")
-        credentials {
-            username = project.findProperty("gpr.user") as String? ?: System.getenv("GH_USER")
-            password = project.findProperty("gpr.token") as String? ?: System.getenv("GH_TOKEN")
-        }
-    }
-}
-
-dependencies {
-    implementation("com.koosco:common-core:0.2.2")
-}
-```
-
-### 인증 설정
-
-`~/.gradle/gradle.properties`에 GitHub 인증 정보를 설정합니다:
-
-```properties
-gpr.user=your-github-username
-gpr.token=your-github-token
-```
-
-또는 환경 변수로 설정:
-```bash
-export GH_USER=your-github-username
-export GH_TOKEN=your-github-token
-```
 
 ## 패키지 구조
 
@@ -138,26 +102,6 @@ Auto Configuration으로 자동 등록되며 다음을 처리합니다:
 2. 유효성 검사 예외 (`@Valid`, `@Validated`, `ConstraintViolation`)
 3. 요청 매핑 에러 (타입 불일치, 파라미터 누락, 잘못된 JSON)
 4. 시스템 레벨 예외 (invariant violation, 예상치 못한 오류)
-
-### 2. API 응답
-
-#### ApiResponse
-
-모든 API 응답을 위한 표준 래퍼:
-
-```kotlin
-// 데이터가 있는 성공 응답
-ApiResponse.success(data)
-
-// 데이터가 없는 성공 응답
-ApiResponse.success<Unit>()
-
-// ErrorCode로 에러 응답
-ApiResponse.error(CommonErrorCode.NOT_FOUND)
-
-// 필드 유효성 에러가 있는 에러 응답
-ApiResponse.error(errorCode, fieldErrors = listOf(...))
-```
 
 #### 응답 예시
 
